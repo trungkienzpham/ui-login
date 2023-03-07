@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./style.css">
+    <script src="./index.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="screen">
+            <div class="screen__content">
+                <div class="login">
+                    <div class="login__field">
+                        <i class="login__icon fas fa-user"></i>
+                        <input type="text" class="login__input" placeholder="User name / Email">
+                    </div>
+                    <div class="login__field">
+                        <i class="login__icon fas fa-lock"></i>
+                        <input type="password" class="login__input" placeholder="Password">
+                    </div>
+                    <button class="button login__submit" onclick="login()" >
+                        <span class="button__text">Log In Now</span>
+                        <i class="button__icon fas fa-chevron-right"></i>
+                    </button>		
+                    <button class="button login__submit" onclick="create_job_import_sheet('kien134')" >
+                        <span class="button__text">Create job import sheet</span>
+                        <i class="button__icon fas fa-chevron-right"></i>
+                    </button>				
+                </div>
+                <div class="social-login">
+                    <!-- <h3>log in via</h3> -->
+                    <div class="social-icons">
+                        <a href="#" class="social-login__icon fab fa-instagram"></a>
+                        <a href="#" class="social-login__icon fab fa-facebook"></a>
+                        <a href="#" class="social-login__icon fab fa-twitter"></a>
+                    </div>
+                </div>
+            </div>
+            <div class="screen__background">
+                <span class="screen__background__shape screen__background__shape4"></span>
+                <span class="screen__background__shape screen__background__shape3"></span>		
+                <span class="screen__background__shape screen__background__shape2"></span>
+                <span class="screen__background__shape screen__background__shape1"></span>
+            </div>		
+        </div>
+    </div>
+    <script>
+        async function login(){
+            let user = $("input.login__input[type='text']").val();
+            let pass = $("input.login__input[type='password']").val();
+
+            var objToken = await do_login("http://auth.webss.local/login", user, pass );
+             localStorage.setItem('token', objToken.token);       
+         }
+        //  user = trangnx@websosanh.org
+         async function do_login(url = "", user ="", pass ="") {
+            const response = await fetch(url, {
+                method: "POST", 
+                mode: "cors", 
+                cache: "no-cache", 
+                credentials: "same-origin", 
+                headers: {
+                "Content-Type": "application/json",
+                },
+                redirect: "follow",
+                referrerPolicy: "no-referrer", 
+                body: JSON.stringify({password: pass, userName: user}), 
+            });
+            return response.json(); 
+        }
+
+        async function create_job_import_sheet( sheetId = "")
+        {
+            console.log('begin');
+            var respon = await request("http://bid.webss.local/api/batch-jobs/create-job-import-sheet", {sheetId: sheetId}, "POST" )
+
+            console.log('respon: ', respon);
+        }
+
+        async function request(url = "", data = {}, method = '') {
+        const response = await fetch(url, {
+            method: method, 
+            mode: "cors", 
+            cache: "no-cache", 
+            credentials: "same-origin", 
+            headers: {
+            "Content-Type": "application/json",
+            "Authorization": 'Bearer '+localStorage.getItem('token')
+            },
+            redirect: "follow",
+            referrerPolicy: "no-referrer", 
+            body: JSON.stringify(data), 
+        });
+        return response.json(); 
+        }
+    </script>
+</body>
+</html>
